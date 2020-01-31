@@ -1,2 +1,2 @@
-# Seq2seq-
+# Seq2seq
 personal study
