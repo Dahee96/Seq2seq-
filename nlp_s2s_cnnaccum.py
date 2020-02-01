@@ -125,6 +125,7 @@ class Decoder(nn.Module):
 
 class CNNnet(nn.Module):
     def __init__(self, output_dim, input_dim, emb_dim, hid_dim, conv_layers, kernel_size, dropout, trg_pad_idx, device):
+        RecursionError: maximum recursion depth exceeded
         self.kernel_size = kernel_size
         self.trg_pad_idx = trg_pad_idx
         self.device = device
