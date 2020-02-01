@@ -125,7 +125,7 @@ class Decoder(nn.Module):
 
 class CNNnet(nn.Module):
     def __init__(self, output_dim, input_dim, emb_dim, hid_dim, conv_layers, kernel_size, dropout, trg_pad_idx, device):
-        RecursionError: maximum recursion depth exceeded
+        super().__init__()
         self.kernel_size = kernel_size
         self.trg_pad_idx = trg_pad_idx
         self.device = device
@@ -321,17 +321,9 @@ print('\tTest Loss: %3f | Test PPL: %7.3f' %(test_loss, math.exp(test_loss)))
 
 
 ******************************************************************************************
-Traceback (most recent call last):
-  File "/home/dh/PycharmProjects/seq2seq/nlp_s2s_cnnaccum.py", line 240, in <module>
-    net = CNNnet(OUTPUT_DIM, INPUT_DIM, ENC_EMB_DIM, HID_DIM, CONV_LAYERS, KERNEL_SIZE, ENC_DROPOUT,TRG_PAD_IDX, device)
-  File "/home/dh/PycharmProjects/seq2seq/nlp_s2s_cnnaccum.py", line 141, in __init__
-    self.emb2hid = nn.Linear(emb_dim, hid_dim)
-  File "/home/dh/PycharmProjects/seq2seq/venv/lib/python3.5/site-packages/torch/nn/modules/module.py", line 611, in __setattr__
-    "cannot assign module before Module.__init__() call")
-AttributeError: cannot assign module before Module.__init__() call
-    저번코드는 encoder에서 cnn해주었고 이건 CNNnet함수를 새로 만들었는데 자꾸 이 에러가 떠요 ㅠㅠ 왜 CNNnet이라는 클래스를 못불러올까요...? encoder, decoder, cnnnet함수 순서 안꼬이는거 같은데...
-    
-    
+  File "/home/dh/PycharmProjects/seq2seq/nlp_s2s_cnnaccum.py", line 93, in embedding
+    embedded = self.dropout(self.embedding(src))
+RecursionError: maximum recursion depth exceeded
     
     
     
