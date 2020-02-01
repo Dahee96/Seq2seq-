@@ -83,7 +83,7 @@ class Encoder(nn.Module):
         ##outputs, (hidden, cell) = nn.utils.rnn.pad_packed_sequence(packed_outputs)
         return hidden, cell
 
-    def embedding(self, src, src_len):
+    def embedding1(self, src, src_len):
         # src = [src len, batch size]
         # src_len = [src len]
         embedded = self.dropout(self.embedding(src))
@@ -117,7 +117,7 @@ class Decoder(nn.Module):
         #prediction = [batch size, output dim]
         return prediction, hidden, cell
 
-    def embedding(self, trg):
+    def embedding2(self, trg):
         conv_embedded = self.dropout(self.embedding(trg))
         #trg 패딩해야하는지 모르겠네...packed_embedded = nn.utils.rnn.pack_padded_sequence(conv_embedded, trg_len)
         return conv_embedded
@@ -193,9 +193,9 @@ class Seq2Seq(nn.Module):
 
 
         # last hidden state of the encoder is used as the initial hidden state of the decoder
-        packed_embedded = self.encoder.embedding(src, src_len)
+        packed_embedded = self.encoder.embedding1(src)
         # econder랑 conv랑 concat
-        conv_embedded = self.decoder.embedding(trg)
+        conv_embedded = self.decoder.embedding2(trg)
         trg_conv = self.cnnnet(conv_embedded)
         enc_input = torch.cat((packed_embedded, trg_conv), dim=2)
         hidden, cell = self.encoder(enc_input)
