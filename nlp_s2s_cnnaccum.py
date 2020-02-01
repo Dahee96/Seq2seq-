@@ -76,14 +76,11 @@ class Encoder(nn.Module):
 
     def forward(self, enc_input):
         ##packed_outputs, hidden = self.rnn(enc_input)
-        outputs, (hidden, cell) = nn.utils.rnn.pad_packed_sequence(enc_input)
+        padded_enc_input = nn.utils.rnn.pad_packed_sequence(enc_input)
+        outputs, (hidden, cell) = self.rnn(padded_enc_input)
         # packed_outputs is a packed sequence containing all hidden states
         # hidden is now from the final non-padded element in the batch
         ##outputs, (hidden, cell) = nn.utils.rnn.pad_packed_sequence(packed_outputs)
-        # outputs is now a non-packed sequence, all hidden states obtained
-        #  when the input is a pad token are all zeros
-        # outputs = [src len, batch size, hid dim * num directions] #attention 계산 안할거니까 return 필요없음
-        # hidden = [n layers * num directions, batch size, hid dim]
         return hidden, cell
 
     def embedding(self, src, src_len):
@@ -108,11 +105,6 @@ class Decoder(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, input, hidden, cell):
-        # input=[batch_size]
-        # hidden=[n layers * n directions, batch size, hid dim]
-        # cell=[n layers * n directions, batch size, hid dim]
-        # hidden=[n layers, batch size, hid dim]
-        # context=[n layers, batch size, hid dim]
         input = input.unsqueeze(0)
         # input = [1, batch size]
         embedded = self.dropout(self.embedding(input))
@@ -147,15 +139,13 @@ class CNNnet(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, conv_embedded):
-        ##src_len = src.shape[0]
         trg_len =trg.shape[0]
-        batch_size = trg.shape[1]
         # conv_embedded = [trg len, batch size, emb dim]
         conv_input = self.emb2hid(conv_embedded)
         # conv_input = [trg len, batch size, hid dim]
         conv_input = conv_input.permute(1,2,0)
         #conv_input = [batch size, hid dim, trg len]
-        batch_size = conv_input.shape[0] #다시 정의 왜해?
+        batch_size = conv_input.shape[0] 
         hid_dim = conv_input.shape[1]
         for i, conv in enumerate(self.convs):
             conv_input = self.dropout(conv_input)
@@ -196,7 +186,7 @@ class Seq2Seq(nn.Module):
         src_len = src.shape[0]
         trg_len = trg.shape[0]
         trg_vocab_size = self.decoder.output_dim
-        #embedded = self.net(src,trg)
+       
         # tensor to store decoder outputs
         outputs = torch.zeros(trg_len, batch_size, trg_vocab_size).to(self.device)
 
@@ -245,10 +235,6 @@ def init_weights(m):
         nn.init.uniform_(param.data, -0.08, 0.08)
 model.apply(init_weights)
 
-#파라메터 수 계산
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-#print('The model has %s trainable parameters' %count_parameters(model)) #13899013
 
 # optimize
 optimizer = optim.Adam(model.parameters())
@@ -291,15 +277,10 @@ def evaluate(model, iterator, criterion):
             src = batch.src
             trg = batch.trg
             output = model(src, trg, 0)
-            # trg=[trg len, batch size]
-            # output=[trg len, batch size, output dim]
-
             output_dim = output.shape[-1]
             output = output[1:].view(-1, output_dim)
             trg = trg[1:].view(-1)
-            # trg=[(trg len - 1) * batch size]
-            # ouput=[(trg len - 1) * batch size, output dim]
-
+          
             loss = criterion(output, trg)
             epoch_loss += loss.item()
     return epoch_loss / len(iterator)
@@ -313,7 +294,7 @@ def epoch_time(start_time, end_time):
 
 
 N_EPOCHS = 1
-CLIP = 1 #??
+CLIP = 1 
 best_valid_loss = float('inf')
 
 for epoch in range(N_EPOCHS):
@@ -336,3 +317,21 @@ for epoch in range(N_EPOCHS):
 model.load_state_dict(torch.load('tut1-model.pt'))
 test_loss = evaluate(model, test_iterator, criterion)
 print('\tTest Loss: %3f | Test PPL: %7.3f' %(test_loss, math.exp(test_loss)))
+
+
+******************************************************************************************
+Traceback (most recent call last):
+  File "/home/dh/PycharmProjects/seq2seq/nlp_s2s_cnnaccum.py", line 240, in <module>
+    net = CNNnet(OUTPUT_DIM, INPUT_DIM, ENC_EMB_DIM, HID_DIM, CONV_LAYERS, KERNEL_SIZE, ENC_DROPOUT,TRG_PAD_IDX, device)
+  File "/home/dh/PycharmProjects/seq2seq/nlp_s2s_cnnaccum.py", line 141, in __init__
+    self.emb2hid = nn.Linear(emb_dim, hid_dim)
+  File "/home/dh/PycharmProjects/seq2seq/venv/lib/python3.5/site-packages/torch/nn/modules/module.py", line 611, in __setattr__
+    "cannot assign module before Module.__init__() call")
+AttributeError: cannot assign module before Module.__init__() call
+    저번코드는 encoder에서 cnn해주었고 이건 CNNnet함수를 새로 만들었는데 자꾸 이 에러가 떠요 ㅠㅠ 왜 CNNnet이라는 클래스를 못불러올까요...? encoder, decoder, cnnnet함수 순서 안꼬이는거 같은데...
+    
+    
+    
+    
+    
+    
