@@ -306,8 +306,8 @@ def epoch_time(start_time, end_time):
     return elapsed_mins, elapsed_secs
 
 
-N_EPOCHS = 10
-CLIP = 1 #??
+N_EPOCHS = 50
+CLIP = 1 
 best_valid_loss = float('inf')
 
 for epoch in range(N_EPOCHS):
@@ -348,3 +348,5 @@ def calculate_bleu(data, src_field, trg_field, model, device, max_len=50):
 
 bleu_score = calculate_bleu(test_data, SRC, TRG, model, device)
 print('BLEU score = %.2f' %bleu_score*100 )
+
+#bleu =0.17
