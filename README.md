@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # The PyTorch-Kaldi Speech Recognition Toolkit
 <img src="pytorch-kaldi_logo.png" width="220" img align="left">
 PyTorch-Kaldi is an open-source repository for developing state-of-the-art DNN/HMM speech recognition systems. The DNN part is managed by PyTorch, while feature extraction, label computation, and decoding are performed with the Kaldi toolkit.
@@ -968,3 +969,7 @@ copy-feats ark:exp/TIMIT_MLP_fbank_autoencoder/exp_files/forward_TIMIT_test_ep00
 [6] T. Parcollet, M. Morchid, G. Linarès, R. De Mori, "Bidirectional Quaternion Long-Short Term Memory Recurrent Neural Networks for Speech Recognition", in Proceedings of ICASSP 2019 [ArXiv](https://arxiv.org/abs/1811.02566)
 
 
+=======
+# Seq2seq
+personal study
+>>>>>>> 84c0d5f5b4ce13e254a85160314dfebea2a0e3de
